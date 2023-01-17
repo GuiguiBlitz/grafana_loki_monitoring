@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+ 
+positions:
+  filename: ./positions.yaml
+ 
+clients:
+  - url: https://loki-flux-prod.korian.cloud/loki/api/v1/push
+    tenant_id: docker
+    
+scrape_configs:
+- job_name: FWTester
+  static_configs:
+  - labels:
+      app: FWTester
+      __path__: E:\FWTester\log\result\*.log
+  pipeline_stages:
+    - match:
+        selector: '{app="FWTester"}'
+        stages:
+        - json:
+            expressions:
+              status: status
+        - labels:
+            status:

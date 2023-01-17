@@ -1,0 +1,431 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 4,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "{status=\"KO\"}"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "KO"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "{status=\"OK\"}"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "OK"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "OK"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "KO"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "red",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 17,
+          "x": 0,
+          "y": 0
+        },
+        "id": 4,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "9.1.6",
+        "targets": [
+          {
+            "datasource": {
+              "type": "loki",
+              "uid": "loki"
+            },
+            "editorMode": "builder",
+            "expr": "max by(status) (count_over_time({app=\"FWTester\", status=~\"KO|OK\"} [1h]))",
+            "queryType": "range",
+            "refId": "A"
+          }
+        ],
+        "title": "Network test results",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "gridPos": {
+          "h": 23,
+          "w": 7,
+          "x": 17,
+          "y": 0
+        },
+        "id": 6,
+        "options": {
+          "dedupStrategy": "exact",
+          "enableLogDetails": true,
+          "prettifyLogMessage": true,
+          "showCommonLabels": false,
+          "showLabels": false,
+          "showTime": false,
+          "sortOrder": "Descending",
+          "wrapLogMessage": false
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "loki",
+              "uid": "loki"
+            },
+            "editorMode": "builder",
+            "expr": "{app=\"FWTester\", status=~\"KO|OK\"} |= ``",
+            "queryType": "range",
+            "refId": "A"
+          }
+        ],
+        "title": "Complete log",
+        "type": "logs"
+      },
+      {
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "string"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "status 2"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "OK": {
+                          "color": "green",
+                          "index": 0
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "target"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 284
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "tag"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 115
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 17,
+          "x": 0,
+          "y": 8
+        },
+        "id": 2,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "Last test"
+            }
+          ]
+        },
+        "pluginVersion": "9.1.6",
+        "targets": [
+          {
+            "datasource": {
+              "type": "loki",
+              "uid": "loki"
+            },
+            "editorMode": "builder",
+            "expr": "{app=\"FWTester\", status=\"KO\"}",
+            "queryType": "range",
+            "refId": "A"
+          }
+        ],
+        "title": "Last KO",
+        "transformations": [
+          {
+            "id": "extractFields",
+            "options": {
+              "format": "json",
+              "replace": false,
+              "source": "Line"
+            }
+          },
+          {
+            "id": "extractFields",
+            "options": {
+              "format": "json",
+              "source": "labels"
+            }
+          },
+          {
+            "id": "groupBy",
+            "options": {
+              "fields": {
+                "date": {
+                  "aggregations": [
+                    "firstNotNull"
+                  ],
+                  "operation": "aggregate"
+                },
+                "port": {
+                  "aggregations": [],
+                  "operation": "groupby"
+                },
+                "source": {
+                  "aggregations": [],
+                  "operation": "groupby"
+                },
+                "status 1": {
+                  "aggregations": []
+                },
+                "status 2": {
+                  "aggregations": []
+                },
+                "tag": {
+                  "aggregations": [],
+                  "operation": "groupby"
+                },
+                "target": {
+                  "aggregations": [],
+                  "operation": "groupby"
+                },
+                "test": {
+                  "aggregations": [],
+                  "operation": "groupby"
+                }
+              }
+            }
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Line": true,
+                "Time": true,
+                "app": true,
+                "date": false,
+                "filename": true,
+                "id": true,
+                "labels": true,
+                "source 2": true,
+                "status 1": true,
+                "test": false,
+                "tsNs": true
+              },
+              "indexByName": {
+                "date (firstNotNull)": 0,
+                "port": 4,
+                "source": 2,
+                "tag": 1,
+                "target": 3,
+                "test": 5
+              },
+              "renameByName": {
+                "date (firstNotNull)": "Last test",
+                "date (lastNotNull)": "Last test",
+                "tag": ""
+              }
+            }
+          }
+        ],
+        "type": "table"
+      }
+    ],
+    "refresh": "15m",
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-12h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "FWTester",
+    "uid": "TvosEV24z",
+    "version": 16,
+    "weekStart": ""
+  }

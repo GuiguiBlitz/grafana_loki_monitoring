@@ -1,0 +1,48 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+ 
+positions:
+  filename: ./positions.yaml
+ 
+clients:
+  - url: https://loki-flux-prod.korian.cloud/loki/api/v1/push
+    tenant_id: docker
+
+scrape_configs:
+- job_name: PentahoEAI_vs_vtom_daily
+  static_configs:
+  - labels:
+      app: PentahoEAI_vs_vtom_daily
+      env: PROD
+      __path__: C:\Korian\Apps\pentaho-mon\out\daily\*
+- job_name: PentahoEAI_vs_vtom_hourly
+  static_configs:
+  - labels:
+      app: PentahoEAI_vs_vtom_hourly
+      env: PROD
+      __path__: C:\Korian\Apps\pentaho-mon\out\hourly\*
+- job_name: Blueway_services_monitoring
+  static_configs:
+  - labels:
+      app: Blueway_services_monitoring
+      env: PROD
+      __path__: C:\Korian\Apps\pentaho-mon\out\blueway_svc\*
+- job_name: VTom_ressources
+  static_configs:
+  - labels:
+      app: VTom_ressources
+      env: PROD
+      __path__: C:\Korian\Apps\pentaho-mon\out\vtom_ressources\*
+- job_name: Endpoints_status
+  static_configs:
+  - labels:
+      app: Endpoints_status
+      env: PROD
+      __path__: C:\Korian\Apps\pentaho-mon\out\Endpoints_status\*
+- job_name: Monitoring_nodejs
+  static_configs:
+  - labels:
+      app: Monitoring_nodejs
+      env: PROD
+      __path__: C:\Korian\Apps\pentaho-mon\pentaho-mon-service-wrapper.out.log

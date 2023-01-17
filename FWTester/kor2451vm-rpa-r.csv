@@ -1,0 +1,11 @@
+Tag,Host,Port,Test
+"RPA-REC",https://coda15-rec.korian.cloud/coda/,NA,HTTPS
+"RPA-REC",https://hr9-ppd.korian.cloud/,NA,HTTPS
+"RPA-REC",https://hr9-rec.korian.cloud/,NA,HTTPS
+"RPA-REC",https://www.net-entreprises.fr/ ,NA,HTTPS
+"RPA-REC",https://vodimokorian.p2p.basware.com,NA,HTTPS
+"RPA-REC",http://2captcha.com/in.php,NA,HTTP
+"RPA-REC",https://www.Ibancalculator.com,NA,HTTPS
+"RPA-REC",https://Casier-judiciaire.justice.gouv.fr,NA,HTTPS
+"RPA-REC",https://annuaire.sante.fr,NA,HTTPS
+"RPA-REC",https://www.due.urssaf.fr,NA,HTTPS

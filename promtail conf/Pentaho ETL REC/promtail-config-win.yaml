@@ -1,0 +1,44 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+ 
+positions:
+  filename: ./positions.yaml
+ 
+clients:
+  - url: https://loki.apps.prod.korian.cloud/loki/api/v1/push
+    basic_auth:
+      username: user
+      password: pass
+    # tls_config:
+    #   insecure_skip_verify: true
+scrape_configs:
+- job_name: Pentaho_ETL
+  static_configs:
+  - labels:
+      app: Pentaho_ETL
+      logger: pentaho
+      env: REC
+      server: kor2351VM-ETL-R
+      __path__: E:\pentaho\server\pentaho-server\tomcat\logs\pentaho.log
+  pipeline_stages:
+  - match:
+      selector: '{app="Pentaho_ETL"}'
+      stages:
+      - regex:
+          expression: '(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})[ ]+(?P<level>[^ ]*)[ ]+(?P<class>\[.*\])'
+      - multiline:
+          firstline: '(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}[ ]+[^ ]*[ ]+\[.*\])'
+          max_wait_time: 3s 
+          max_lines: 150
+      - labels:
+          level:
+          class:
+      - drop:
+          source: level
+          expression: "(INFO|DEBUG|^$)"           
+      - timestamp:
+          source: time 
+          format: 2006-01-02 15:04:05,000
+          location: Europe/Paris
+          action_on_failure: fudge

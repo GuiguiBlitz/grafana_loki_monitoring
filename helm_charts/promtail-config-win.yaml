@@ -1,0 +1,118 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+ 
+positions:
+  filename: ./positions.yaml
+ 
+# clients:
+#   - url: https://localhost/loki/api/v1/push
+#     basic_auth:
+#       username: user
+#       password: pass
+#     tls_config:
+#       insecure_skip_verify: true
+clients:
+  - url: https://loki.apps.prod.korian.cloud/loki/api/v1/push
+    basic_auth:
+      username: user
+      password: pass
+    # tls_config:
+    #   insecure_skip_verify: true
+
+scrape_configs:
+- job_name: Blueway_dev
+  static_configs:
+  - labels:
+      app: Blueway
+      env: DEV
+      server: kor2561vm-bwy-d
+      __path__: \\kor2561vm-bwy-d\e$\blueway\BluewayEngine\logs\blueway-engine.log
+  pipeline_stages:
+  - match:
+      selector: '{app="Blueway"}'
+      stages:
+      - regex:
+          expression: '(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (?P<level>[^ ]*)'
+      - multiline:
+          firstline: '(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})'
+          max_wait_time: 3s 
+          max_lines: 128
+      - labels:
+          level:
+      - timestamp:
+          source: time 
+          format: 2006-01-02 15:04:05,000
+          location: Europe/Paris
+          action_on_failure: fudge
+- job_name: Blueway_rec
+  static_configs:
+  - labels:
+      app: Blueway
+      env: REC
+      server: kor2564vm-bwy-r
+      __path__: \\kor2564vm-bwy-r\e$\blueway\BluewayEngine\logs\blueway-engine.log
+  pipeline_stages:
+  - match:
+      selector: '{app="Blueway"}'
+      stages:
+      - regex:
+          expression: '(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (?P<level>[^ ]*)'
+      - multiline:
+          firstline: '(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})'
+          max_wait_time: 3s 
+          max_lines: 128
+      - labels:
+          level:
+      - timestamp:
+          source: time 
+          format: 2006-01-02 15:04:05,000
+          location: Europe/Paris
+          action_on_failure: fudge
+# - job_name: Pentaho_schedule_prod
+#   static_configs:
+#   - labels:
+#       app: Pentaho_schedule
+#       env: PROD
+#       __path__: \\kor2564vm-bwy-r\e$\blueway\BluewayEngine\logs\blueway-engine.log
+#   pipeline_stages:
+#   - match:
+#       selector: '{app="Pentaho_schedule"}'
+#       stages:
+#       - regex:
+#           expression: '(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (?P<level>[^ ]*)'
+#       - multiline:
+#           firstline: '(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})'
+#           max_wait_time: 3s 
+#           max_lines: 128
+#       - labels:
+#           level:
+#       - timestamp:
+#           source: time 
+#           format: 2006-01-02 15:04:05,000
+#           location: Europe/Paris
+#           action_on_failure: fudge
+# - job_name: Pentaho_Prod
+#   static_configs:
+#   - labels:
+#       app: Pentaho
+#       env: PROD
+#       server: kor0541VM-EAI
+#       __path__: \\kor0541VM-EAI\e$\pentaho\server\pentaho-server\tomcat\logs\pentaho.log
+#   pipeline_stages:
+#   - match:
+#       selector: '{app="Pentaho"}'
+#       stages:
+#       - regex:
+#           expression: '(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (?P<level>[^ ]*)'
+#       - multiline:
+#           firstline: '(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})'
+#           max_wait_time: 3s 
+#           max_lines: 128
+#       - labels:
+#           level:
+#       - timestamp:
+#           source: time 
+#           format: 2006-01-02 15:04:05,000
+#           location: Europe/Paris
+#           action_on_failure: fudge

@@ -1,0 +1,275 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 9,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "000000001"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-text",
+            "filterable": false,
+            "inspect": false,
+            "width": 60
+          },
+          "mappings": [
+            {
+              "options": {
+                "pattern": ".*ERROR.*",
+                "result": {
+                  "color": "#F2495C",
+                  "index": 0
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*Did not run.*",
+                "result": {
+                  "color": "orange",
+                  "index": 1
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*Out of schedule.*",
+                "result": {
+                  "color": "yellow",
+                  "index": 2
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*OK.*",
+                "result": {
+                  "color": "green",
+                  "index": 3
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*Running.*",
+                "result": {
+                  "color": "light-green",
+                  "index": 4
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*Waiting.*",
+                "result": {
+                  "color": "super-light-green",
+                  "index": 5
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*Less than.*",
+                "result": {
+                  "color": "super-light-yellow",
+                  "index": 6
+                }
+              },
+              "type": "regex"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CD_INTERFACE"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 200
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SCORE"
+            },
+            "properties": [
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 21,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "SCORE"
+          }
+        ]
+      },
+      "pluginVersion": "9.0.0-beta2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "000000001"
+          },
+          "editorMode": "builder",
+          "expr": "{app=\"PentahoEAI_vs_vtom\"}",
+          "legendFormat": "",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Suivi Pentaho EAI",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "format": "json",
+            "replace": false,
+            "source": "Line"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "CD_INTERFACE": false,
+              "Line": true,
+              "Time": true,
+              "data": true,
+              "id": true,
+              "labels": true,
+              "timestamp": true,
+              "tsNs": true
+            },
+            "indexByName": {
+              "0": 1,
+              "1": 2,
+              "2": 3,
+              "3": 4,
+              "4": 5,
+              "5": 6,
+              "6": 7,
+              "7": 8,
+              "8": 9,
+              "9": 10,
+              "10": 11,
+              "11": 12,
+              "12": 13,
+              "13": 14,
+              "14": 15,
+              "15": 16,
+              "16": 17,
+              "17": 18,
+              "18": 19,
+              "19": 20,
+              "20": 21,
+              "21": 22,
+              "22": 23,
+              "23": 24,
+              "CD_INTERFACE": 0,
+              "Time": 25,
+              "data": 27,
+              "timestamp": 26
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": "15m",
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Suivi Pentaho EAI vs VTom",
+  "uid": "fPPeBxrnk",
+  "version": 7,
+  "weekStart": ""
+}

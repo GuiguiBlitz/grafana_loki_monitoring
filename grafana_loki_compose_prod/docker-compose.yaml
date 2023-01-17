@@ -1,0 +1,210 @@
+# docker-compose --compatibility -f docker-compose.yaml down 
+# docker-compose --compatibility -f docker-compose.yaml up -d
+# docker ps -a -f "name=grafana"
+
+#version : "3.8" sur le repos
+version: "3.7" 
+
+networks:
+  traefik:
+    external:
+      name: reverse-proxy
+  loki:
+      name: loki
+
+volumes:
+  prometheus:
+  grafana:
+  alertmanager-data:
+
+services:
+  init:
+    image: nexus.korian.cloud:8446/grafana/loki:2.6.1
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    user: root
+    entrypoint:
+      - "chown"
+      - "10001:10001"
+      - "/loki"
+    volumes:
+      - ./loki:/loki
+    networks:
+      - loki
+
+  grafana:
+    image: nexus.korian.cloud:8446/grafana/grafana:9.1.6
+    environment:
+      - "GF_USERS_DEFAULT_THEME=dark"
+      - "GF_SERVER_DOMAIN=grafana-flux-prod.korian.cloud"
+      - "GF_SECURITY_ADMIN_USER=adminflux"
+      - "GF_SECURITY_ADMIN_PASSWORD=welcome"
+      - "GF_SMTP_ENABLED=true"
+      - "GF_SMTP_HOST=mail.korian.com:25"
+      - "GF_SMTP_FROM_ADDRESS=grafana-flux@korian.fr"
+      - "GF_SMTP_FROM_NAME=grafana-flux"
+      - "GF_AUTH_ANONYMOUS_ENABLED=true"
+      - "GF_AUTH_ANONYMOUS_ORG_NAME=public"
+      - "GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer"
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    volumes:
+      - ./config/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yml
+      - grafana:/var/lib/grafana
+    labels:
+      - "traefik.enable=true" 
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"     
+      - "traefik.http.routers.grafana.rule=Host(`grafana-flux-prod.korian.cloud`)"
+      - "traefik.docker.network=reverse-proxy" 
+    networks:
+      - loki
+      - traefik
+
+  prometheus:
+    image: nexus.korian.cloud:8446/prom/prometheus:v2.27.0
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus:/prometheus
+    command:
+      [
+        '--log.level=debug',
+        '--config.file=/etc/prometheus/prometheus.yml',
+        '--query.lookback-delta=30s'
+      ]
+    networks:
+      - loki
+
+  promtail:
+    image: nexus.korian.cloud:8446/grafana/promtail:2.6.1
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    volumes:
+      - ./loki/:/var/log/
+      - ./config:/etc/promtail/
+    ports:
+      - "9080:9080"
+    command: -config.file=/etc/promtail/promtail.yaml
+    networks:
+      - loki
+
+  minio:
+    image: nexus.korian.cloud:8446/minio/minio
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler &&
+        minio server /data
+    environment:
+      - MINIO_ACCESS_KEY=loki
+      - MINIO_SECRET_KEY=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    ports:
+      - "9000:9000"
+    volumes:
+      - /data-flux/grafana-loki/minio:/data
+    networks:
+      - loki
+
+  loki-gateway:
+    image: nexus.korian.cloud:8446/nginx:1.19
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    ports:
+      - "5252"
+      - "3100"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    labels:
+      - "traefik.enable=true" 
+      - "traefik.http.services.loki-gateway.loadbalancer.server.port=3100"
+      - "traefik.http.routers.loki-gateway.rule=Host(`loki-flux-prod.korian.cloud`)"
+      - "traefik.docker.network=reverse-proxy" 
+      # Basic Auth config, pwd : welcome
+      - "traefik.http.middlewares.loki-auth.basicauth.users=loki:$$apr1$$6h20.xh0$$Iq.LldTHhwohpIgjgqyUS0"
+      - "traefik.http.middlewares.loki-auth.basicauth.removeheader=true" 
+    networks:
+      - loki
+      - traefik
+
+  loki-read:
+    image: nexus.korian.cloud:8446/grafana/loki:2.6.1
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    volumes:
+      - ./config:/etc/loki/
+    ports:
+      - "3100"
+      - "7946"
+    command: "-config.file=/etc/loki/loki.yaml -target=read"
+    networks:
+      - loki
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  loki-write:
+    image: nexus.korian.cloud:8446/grafana/loki:2.6.1
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    volumes:
+      - ./config:/etc/loki/
+    ports:
+      - "3100"
+      - "7946"
+    command: "-config.file=/etc/loki/loki.yaml -target=write"
+    networks:
+      - loki
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  # alertmanager to enable receiving alerts
+  alertmanager:
+    image: nexus.korian.cloud:8446/prom/alertmanager:v0.23.0
+    environment:
+      - "HTTP_PROXY="
+      - "HTTPS_PROXY="
+      - "http_proxy="
+      - "https_proxy="
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - "./config:/config"
+      - alertmanager-data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug
+    networks:
+      - loki
