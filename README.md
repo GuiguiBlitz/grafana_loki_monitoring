@@ -9,7 +9,7 @@ Projet de monitoring opérationnel, couvrants différents axes. Basé sur une st
 - **grafana_loki_compose_prod** : template de deploiement docker prod pour grafana/loki dans l'environement de l'equipe dev, comprenant integration Traefik
 - **grafana_loki_compose_rec** : template de depoiement docker recette pour grafana/loki
 - **helm_charts** : exemple de charts de ploiement helm pour installation grafana/loki sur kubernetes
-- **pentaho_mon** : application de monitoring multi source en NodeJS, present sur le kor0223vm-pen. Les resultats sont centralisés dans loki.
+- **pentaho_mon** : application de monitoring multi source en NodeJS, present sur le xxxxxxxxx. Les resultats sont centralisés dans loki.
 
 ## Flowchart grafana/loki
 
