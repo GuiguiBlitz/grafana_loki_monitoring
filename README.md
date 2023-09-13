@@ -1,4 +1,4 @@
-# Monitoring ATD flux/esb/...
+# Monitoring Flux / ESB
 
 Projet de monitoring opérationnel, couvrants différents axes. Basé sur une stack grafana/loki/promtail/nodejs. Permettant de générer et centraliser des logs. Ces logs sont ensuite exploitables directement ou via des dashboards de suivi opérationnels.
 
