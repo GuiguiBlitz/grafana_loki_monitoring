@@ -87,7 +87,7 @@ Les configurations de datasources et de dashboards sont distinctes entre les deu
 
 ### Monitoring ESB et Flux 
 
-![flux](/readme_images/flux.PNG)
+![flux](/readme_images/flux.png)
 
 ### Planning vs actual runs
 
